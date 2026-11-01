@@ -8,3 +8,4 @@ coverage/
 # Keep the source assignment and team documents local.
 /*.pdf
 /smart_contract.txt
+/submission.txt

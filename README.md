@@ -6,7 +6,7 @@ CSE 540, Fall B 2026 - Group 16
 
 SkyChain records the history of aircraft parts as they move between companies. Each record includes the part number, serial number, manufacturer, current custodian, certificate hash, and status. A sender starts a custody transfer. The recipient must accept it before custody changes.
 
-This repository contains the **Smart Contract Design assignment draft**. The Solidity contracts compile and run in local tests. The web app, live IPFS uploads, and Polygon Amoy deployment are future project work. A recorded status is a participant's claim; it is not proof of FAA approval or physical condition.
+This repository contains the **Smart Contract Design assignment draft**. Use Remix to compile and deploy the Solidity contracts. The web app, live IPFS uploads, and Polygon Amoy deployment are future project work. A recorded status is a participant's claim; it is not proof of FAA approval or physical condition.
 
 ## Team
 
@@ -20,16 +20,11 @@ This repository contains the **Smart Contract Design assignment draft**. The Sol
 ## Repository structure
 
 ```text
+.gitignore                      Files excluded from Git
+README.md                       Project description, dependencies, and usage
 contracts/
   ISkyChain.sol                  Public data types, events, and function signatures
   SkyChain.sol                   Contract draft with access checks and comments
-test/
-  SkyChain.test.js               Local contract tests
-  fixtures/release-certificate.txt   Simulated certificate; no real aviation data
-hardhat.config.js                Compiler and local test settings
-package.json                    Dependencies and commands
-package-lock.json               Exact dependency versions
-submission.txt                  Public repository link for the assignment
 ```
 
 ## System design
@@ -88,28 +83,11 @@ The complete signatures, record fields, and events are in [`contracts/ISkyChain.
 
 Events: `PartRegistered`, `CertificateRecorded`, `StatusUpdated`, `TransferStarted`, `TransferAccepted`, and `TransferCancelled`. OpenZeppelin also emits role-management events. Clients can filter these events by `partId` to build a history.
 
-## Dependencies and local setup
+## Dependencies and setup
 
-Use **Node.js 24 LTS**, npm, and Git. The contract uses OpenZeppelin Contracts **5.4.0**. Local checks use Hardhat **3.21.2**, its ethers plugin **4.2.2**, ethers.js **6.17.0**, and Node's built-in test runner. The compiler is Solidity **0.8.28**, with optimizer enabled at 200 runs and EVM target `paris`.
+Use a web browser and **Remix IDE**. The contract uses **Solidity 0.8.28** and **OpenZeppelin Contracts 5.4.0**. Enable the compiler optimizer at **200 runs** and set the EVM target to **paris**. Remix downloads the compiler and imported library, so internet access is required.
 
-```sh
-git clone https://github.com/Parva101/skychain.git
-cd skychain
-npm ci
-npm test
-```
-
-To compile only:
-
-```sh
-npm run compile
-```
-
-The first compile needs internet access to download the Solidity compiler. Tests deploy to a temporary local blockchain. They need no wallet, private key, test tokens, or live RPC service.
-
-Tests cover role grants and revocation, registration, duplicate and invalid inputs, certificate changes, a one-byte file tamper, transfer consent, cancellation, status permissions, final retirement, and unknown records. The fixture uses simulated data and a dummy CID label; it is not a live IPFS file.
-
-**Known tooling issue:** `npm audit` reports four high-severity entries caused by Hardhat's Zod 3 dependency. The [Zod advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5) concerns memory use when validating large, untrusted collections. Its patched version is Zod 4.6.6; this Hardhat release requires Zod 3. Do not force an incompatible major-version override. Keep this tooling for trusted local project inputs and check for an upstream fix before exposing a development service. `npm audit --omit=dev` reports no production dependency findings for this draft. Zod is not part of the deployed Solidity code.
+For local practice, use a Remix VM account. For a later Polygon Amoy deployment, use MetaMask and test POL. The planned web app will use ethers.js; it is not needed to compile this contract draft.
 
 ## Use and deploy with Remix
 
@@ -120,7 +98,7 @@ Tests cover role grants and revocation, registration, duplicate and invalid inpu
    import {AccessControl} from "@openzeppelin/contracts@5.4.0/access/AccessControl.sol";
    ```
 
-   Remix can resolve a versioned npm import directly. The repository uses the normal npm path with the same version pinned in `package-lock.json`.
+   Remix resolves this versioned npm import directly. No local package installation is needed.
 3. In **Solidity Compiler**, select **0.8.28**, enable optimization with **200** runs, and set the EVM version to **paris**. Compile `SkyChain.sol`.
 4. In **Deploy & Run Transactions**, first use a **Remix VM** environment. Select `SkyChain`, enter the consortium admin wallet address as the constructor argument, and deploy.
 5. With the admin account selected, read `MANUFACTURER_ROLE`, `ISSUER_ROLE`, and `REPAIR_STATION_ROLE`. Use `grantRole(role, account)` to assign each role to a test account.
@@ -147,7 +125,7 @@ For a later **Polygon Amoy** deployment, add Amoy to MetaMask, obtain test POL, 
 | RPC URL | `https://polygon-amoy.drpc.org` |
 | Explorer | `https://amoy.polygonscan.com/` |
 
-Network settings come from the [Polygon RPC documentation](https://docs.polygon.technology/pos/reference/rpc-endpoints/). See also the [Polygon test faucet](https://faucet.polygon.technology/), [OpenZeppelin access-control guide](https://docs.openzeppelin.com/contracts/5.x/access-control), [Hardhat ethers plugin](https://hardhat.org/docs/plugins/hardhat-ethers), and [Remix import guide](https://remix-ide.readthedocs.io/en/latest/import.html).
+Network settings come from the [Polygon RPC documentation](https://docs.polygon.technology/pos/reference/rpc-endpoints/). See also the [Polygon test faucet](https://faucet.polygon.technology/), [OpenZeppelin access-control guide](https://docs.openzeppelin.com/contracts/5.x/access-control), and [Remix import guide](https://remix-ide.readthedocs.io/en/latest/import.html).
 
 **Deployment status:** no public testnet contract has been deployed for this draft. No live contract address is claimed.
 
@@ -163,7 +141,7 @@ All contract data is public. Use simulated parts and certificates. This design h
 
 ## Assignment submission
 
-Upload [`submission.txt`](submission.txt) to the course assignment. It contains only the public repository link:
+Upload a `.txt` file to the course assignment. It must contain only the public repository link:
 
 ```text
 https://github.com/Parva101/skychain
