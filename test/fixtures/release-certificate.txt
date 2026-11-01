@@ -1,0 +1,5 @@
+SKYCHAIN TEST DATA - NOT AN FAA CERTIFICATE
+Part number: SC-PUMP-100
+Serial number: SN-0001
+Issuer: Demo certificate issuer
+Release: Simulated course project record

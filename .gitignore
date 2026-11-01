@@ -1,0 +1,10 @@
+node_modules/
+artifacts/
+cache/
+coverage/
+.env
+.env.*
+*.log
+# Keep the source assignment and team documents local.
+/*.pdf
+/smart_contract.txt
