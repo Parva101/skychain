@@ -4,9 +4,6 @@ pragma solidity ^0.8.28;
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {ISkyChain} from "./ISkyChain.sol";
 
-/// @title SkyChain: aircraft parts provenance
-/// @notice Course design draft. Records claims; it does not prove physical condition or FAA approval.
-/// @dev Certificate files stay off-chain. Events preserve each change to the current record.
 contract SkyChain is AccessControl, ISkyChain {
     bytes32 public constant MANUFACTURER_ROLE = keccak256("MANUFACTURER_ROLE");
     bytes32 public constant ISSUER_ROLE = keccak256("ISSUER_ROLE");
@@ -15,8 +12,6 @@ contract SkyChain is AccessControl, ISkyChain {
     mapping(bytes32 => Part) private parts;
     mapping(bytes32 => address) public override pendingRecipient;
 
-    /// @notice The consortium admin grants and revokes roles through AccessControl.
-    /// @dev The admin receives no manufacturer, issuer, or repair role by default.
     constructor(address admin) {
         require(admin != address(0), "Zero admin");
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
@@ -26,7 +21,6 @@ contract SkyChain is AccessControl, ISkyChain {
         return keccak256(abi.encode(partNumber, serialNumber));
     }
 
-    /// @inheritdoc ISkyChain
     function registerPart(string calldata partNumber, string calldata serialNumber)
         external override onlyRole(MANUFACTURER_ROLE) returns (bytes32 partId)
     {
@@ -46,7 +40,6 @@ contract SkyChain is AccessControl, ISkyChain {
         emit PartRegistered(partId, msg.sender, partNumber, serialNumber);
     }
 
-    /// @inheritdoc ISkyChain
     function recordCertificate(bytes32 partId, bytes32 certificateHash, string calldata certificateCID)
         external override onlyRole(ISSUER_ROLE)
     {
@@ -60,7 +53,6 @@ contract SkyChain is AccessControl, ISkyChain {
         emit CertificateRecorded(partId, msg.sender, certificateHash, certificateCID);
     }
 
-    /// @inheritdoc ISkyChain
     function updateStatus(bytes32 partId, PartStatus newStatus) external override onlyRole(REPAIR_STATION_ROLE) {
         Part storage part = _existingPart(partId);
         require(msg.sender == part.custodian, "Not current custodian");
@@ -72,7 +64,6 @@ contract SkyChain is AccessControl, ISkyChain {
         emit StatusUpdated(partId, msg.sender, previousStatus, newStatus);
     }
 
-    /// @inheritdoc ISkyChain
     function initiateTransfer(bytes32 partId, address recipient) external override {
         Part storage part = _existingPart(partId);
         require(msg.sender == part.custodian, "Not current custodian");
@@ -83,7 +74,6 @@ contract SkyChain is AccessControl, ISkyChain {
         emit TransferStarted(partId, msg.sender, recipient);
     }
 
-    /// @inheritdoc ISkyChain
     function acceptTransfer(bytes32 partId) external override {
         Part storage part = _existingPart(partId);
         require(msg.sender == pendingRecipient[partId], "Not pending recipient");
@@ -94,7 +84,6 @@ contract SkyChain is AccessControl, ISkyChain {
         emit TransferAccepted(partId, previousCustodian, msg.sender);
     }
 
-    /// @inheritdoc ISkyChain
     function cancelTransfer(bytes32 partId) external override {
         Part storage part = _existingPart(partId);
         require(msg.sender == part.custodian, "Not current custodian");
@@ -102,12 +91,10 @@ contract SkyChain is AccessControl, ISkyChain {
         _clearTransfer(partId);
     }
 
-    /// @inheritdoc ISkyChain
     function getPart(bytes32 partId) external view override returns (Part memory) {
         return _existingPart(partId);
     }
 
-    /// @inheritdoc ISkyChain
     function verifyCertificate(bytes32 partId, bytes32 candidateHash) external view override returns (bool) {
         Part storage part = _existingPart(partId);
         return candidateHash != bytes32(0) && part.certificateHash == candidateHash;
@@ -118,7 +105,6 @@ contract SkyChain is AccessControl, ISkyChain {
         require(part.manufacturer != address(0), "Unknown part");
     }
 
-    // Changed records need fresh recipient consent before custody can move.
     function _clearTransfer(bytes32 partId) private {
         address recipient = pendingRecipient[partId];
         if (recipient != address(0)) {
