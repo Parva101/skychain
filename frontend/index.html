@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SkyChain demo viewer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <p class="eyebrow">CSE 540 · Group 16 · Interim demo</p>
+      <h1>SkyChain</h1>
+      <p class="tagline">Aircraft parts provenance · replay of the Remix VM test</p>
+    </div>
+    <nav class="views" aria-label="Pages">
+      <button type="button" id="tab-status" aria-pressed="false">Project status</button>
+      <button type="button" id="tab-flow" aria-pressed="true">Tested flow</button>
+    </nav>
+  </header>
+
+  <p class="banner" id="banner">
+    Replay of the completed Remix test. No transaction is sent, and Polygon Amoy is not connected.
+  </p>
+
+  <main id="view-status" hidden>
+    <section class="status-grid">
+      <article class="card">
+        <h2>Implemented</h2>
+        <ul id="done-list"></ul>
+      </article>
+      <article class="card">
+        <h2>In progress</h2>
+        <ul id="progress-list"></ul>
+      </article>
+      <article class="card">
+        <h2>Remaining</h2>
+        <ul id="remaining-list"></ul>
+      </article>
+    </section>
+    <section class="card gas-card">
+      <h2>Gas per operation <span>Remix VM</span></h2>
+      <table id="gas-table">
+        <thead>
+          <tr><th>Operation</th><th>Caller</th><th>Gas used</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="note" id="gas-note"></p>
+    </section>
+  </main>
+
+  <main id="view-flow">
+    <div class="flow-layout">
+      <section class="card steps-card">
+        <h2>Calls in the test</h2>
+        <ol id="step-list"></ol>
+        <div class="step-nav">
+          <button type="button" id="prev">Back</button>
+          <button type="button" id="next">Next</button>
+        </div>
+      </section>
+
+      <section class="record-col">
+        <article class="card">
+          <div class="record-head">
+            <h2>Part record</h2>
+            <p id="step-count"></p>
+          </div>
+          <dl id="part-fields"></dl>
+        </article>
+        <article class="card outcome" id="outcome">
+          <p class="who" id="outcome-who"></p>
+          <p class="call" id="outcome-call"></p>
+          <p class="result" id="outcome-result"></p>
+          <p class="gas-line" id="outcome-gas"></p>
+        </article>
+        <section class="card verify">
+      <div class="verify-head">
+        <h2>Certificate check</h2>
+      </div>
+      <div class="verify-actions">
+        <button type="button" id="hash-original">Hash original file</button>
+        <button type="button" id="hash-tampered">Hash tampered file</button>
+        <label class="file-btn">
+          Choose a file
+          <input type="file" id="hash-file" accept=".txt,text/plain">
+        </label>
+      </div>
+      <div id="verify-result" class="verify-result idle">
+        <p>Hash either sample, or choose a file, to compare it with the recorded certificate.</p>
+      </div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>A recorded status is a participant’s claim. It is not proof of FAA approval or of the part’s physical condition.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
